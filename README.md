@@ -31,7 +31,7 @@ Example usage
 
 To apply a profile to an instance (remember to load the profile with `appamor_parser` command line tool)
 
-```
+```ini
 [uwsgi]
 plugin = apparmor
 apparmor-profile = funnyprofile
@@ -42,3 +42,43 @@ pidfile = /run/foo.pid
 ; ensure your profile allows read access to /var/www/app.psgi
 psgi = /var/www/app.psgi
 ```
+
+To apply the profile as a hook:
+
+```sh
+uwsgi --plugin apparmor --hook-as-root apparmor:funnyprofile ...
+```
+
+And to apply it to every vassal
+
+```ini
+[uwsgi]
+plugin = apparmor
+emperor = vassals
+; ensure vassalsprofile allows execution of uwsgi binary
+emperor-apparmor = vassalsprofile
+```
+
+If you have uWSGI >= 2.1, you can use emperor attributes to set the apparmor profile:
+
+```ini
+[emperor]
+; this is the profiel to apply to the vassal
+apparmor = vassal001
+
+[uwsgi]
+; ensure your profile allow INET usage
+socket = 127.0.0.1:3031
+; ensure your profile allows write access to /run/foo.pid
+pidfile = /run/foo.pid
+; ensure your profile allows read access to /var/www/app.psgi
+psgi = /var/www/app.psgi
+```
+
+then run the Emperor
+
+```sh
+uwsgi --plugin apparmor --emperor vassals --emperor-collect-attr apparmor --emperor-apparmor-attr apparmor
+```
+
+remember to specify which attr to collect and to use (yes it seems redundant, one day this could be improved ...)
