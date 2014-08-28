@@ -31,6 +31,7 @@ static void vassal_apply_apparmor(struct uwsgi_instance *ui) {
 
 	if (!profile) return;
 
+	uwsgi_log("[apparmor] setting profile \"%s\" ...\n", profile);
 	if (aa_change_profile(profile)) {
                 uwsgi_error("vassal_apply_apparmor()/aa_change_profile()");
                 exit(1);
@@ -40,6 +41,7 @@ static void vassal_apply_apparmor(struct uwsgi_instance *ui) {
 
 static void apply_apparmor_before_privileges_drop() {
 	if (!uapparmor.profile) return;
+	uwsgi_log("[apparmor] setting profile \"%s\" ...\n", uapparmor.profile);
 	if (aa_change_profile(uapparmor.profile)) {
 		uwsgi_error("apply_apparmor_before_privileges_drop()/aa_change_profile()");
 		exit(1);
