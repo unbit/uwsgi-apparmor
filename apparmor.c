@@ -7,15 +7,36 @@
 
 static struct uwsgi_apparmor {
 	char *profile;
+#if UWSGI_PLUGIN_API > 1
+	char *emperor_apparmor_attr;
+	char *emperor_apparmor;
+#endif
 } uapparmor;
 
 static struct uwsgi_option apparmor_options[] = {
 	{"apparmor-profile", required_argument, 0, "set apparmor profile before privileges drop", uwsgi_opt_set_str, &uapparmor.profile, 0},
+#if UWSGI_PLUGIN_API > 1
+	{"emperor-apparmor-attr", required_argument, 0, "set vassal apparmor profile using the specified attr", uwsgi_opt_set_str, &uapparmor.emperor_apparmor_attr, 0},
+	{"emperor-apparmor", required_argument, 0, "set vassals apparmor profile", uwsgi_opt_set_str, &uapparmor.emperor_apparmor, 0},
+#endif
 	UWSGI_END_OF_OPTIONS
 };
 
+#if UWSGI_PLUGIN_API > 1
 static void vassal_apply_apparmor(struct uwsgi_instance *ui) {
+	char *profile = uapparmor.emperor_apparmor;
+	if (uapparmor.emperor_apparmor_attr) {
+		profile = vassal_attr_get(ui, uapparmor.emperor_apparmor_attr);
+	}
+
+	if (!profile) return;
+
+	if (aa_change_profile(profile)) {
+                uwsgi_error("vassal_apply_apparmor()/aa_change_profile()");
+                exit(1);
+        }
 }
+#endif
 
 static void apply_apparmor_before_privileges_drop() {
 	if (!uapparmor.profile) return;
@@ -42,5 +63,7 @@ struct uwsgi_plugin apparmor_plugin = {
 	.on_load = apparmor_register,
 	.options = apparmor_options,
 	.before_privileges_drop = apply_apparmor_before_privileges_drop,
+#if UWSGI_PLUGIN_API > 1
 	.vassal_before_exec = vassal_apply_apparmor,
+#endif
 };
