@@ -25,8 +25,21 @@ static void apply_apparmor_before_privileges_drop() {
 	}
 }
 
+static int apparmor_hook(char *arg) {
+	int ret = aa_change_profile(arg);
+	if (ret) {
+		uwsgi_error("apparmor_hook()/aa_change_profile()");
+	}
+	return ret;
+}
+
+static void apparmor_register() {
+	uwsgi_register_hook("apparmor", apparmor_hook);
+}
+
 struct uwsgi_plugin apparmor_plugin = {
 	.name = "apparmor",
+	.on_load = apparmor_register,
 	.options = apparmor_options,
 	.before_privileges_drop = apply_apparmor_before_privileges_drop,
 	.vassal_before_exec = vassal_apply_apparmor,
