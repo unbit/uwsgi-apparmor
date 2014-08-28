@@ -5,7 +5,7 @@ uWSGI integration with apparmor
 
 This plugin adds feature for applying apparmor profiles to uWSGI instances.
 
-It requires uWSGI >= 2.0.7
+It requires uWSGI >= 2.0.7 and apparmor development headers (libapparmor-dev on Ubuntu)
 
 Installation
 ============
