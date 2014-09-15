@@ -22,7 +22,11 @@ static struct uwsgi_option apparmor_options[] = {
 	UWSGI_END_OF_OPTIONS
 };
 
+#if UWSGI_PLUGIN_API > 1
+static void vassal_apply_apparmor(struct uwsgi_instance *ui, char **argv) {
+#else
 static void vassal_apply_apparmor(struct uwsgi_instance *ui) {
+#endif
 	char *profile = uapparmor.emperor_apparmor;
 #if UWSGI_PLUGIN_API > 1
 	if (uapparmor.emperor_apparmor_attr) {
