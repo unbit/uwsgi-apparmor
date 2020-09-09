@@ -14,11 +14,35 @@ static struct uwsgi_apparmor {
 } uapparmor;
 
 static struct uwsgi_option apparmor_options[] = {
-	{"apparmor-profile", required_argument, 0, "set apparmor profile before privileges drop", uwsgi_opt_set_str, &uapparmor.profile, 0},
+	{
+		.name     = "apparmor-profile",
+		.type     = required_argument,
+		.shortcut = 0,
+		.help     = "set apparmor profile before privileges drop",
+		.func     = uwsgi_opt_set_str,
+		.data     = &uapparmor.profile,
+		.flags    = 0
+	},
 #if UWSGI_PLUGIN_API > 1
-	{"emperor-apparmor-attr", required_argument, 0, "set vassal apparmor profile using the specified attr", uwsgi_opt_set_str, &uapparmor.emperor_apparmor_attr, 0},
+	{
+		.name     = "emperor-apparmor-attr",
+		.type     = required_argument,
+		.shortcut = 0,
+		.help     = "set vassal apparmor profile using the specified attr",
+		.func     = uwsgi_opt_set_str,
+		.data     = &uapparmor.emperor_apparmor_attr,
+		.flags    = 0
+	},
 #endif
-	{"emperor-apparmor", required_argument, 0, "set vassals apparmor profile", uwsgi_opt_set_str, &uapparmor.emperor_apparmor, 0},
+	{
+		.name     = "emperor-apparmor",
+		.type     = required_argument,
+		.shortcut = 0,
+		.help     = "set vassals apparmor profile",
+		.func     = uwsgi_opt_set_str,
+		.data     = &uapparmor.emperor_apparmor,
+		.flags    = 0
+	},
 	UWSGI_END_OF_OPTIONS
 };
 
